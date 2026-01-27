@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>فیلم تعاملی POV — بدون loader</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- ================= End Screen ================= -->
+<div id="end-screen" class="hidden">
+  <h1>پایان داستان</h1>
+  <div id="finalScore">امتیاز شما: 0</div>
+  <button id="restart-btn">شروع دوباره</button>
+</div>
+
+
+
+<!-- ۱. صفحه ثبت‌نام (اولین چیزی که دیده می‌شود) -->
+<div id="registration-screen" class="full-screen">
+  <div class="content-box">
+    <h1>سلام قهرمان! اسمت رو اینجا بنویس</h1>
+    <p></p>
+    <input type="text" id="studentNameInput" placeholder="...نام و نام خانوادگی" />
+    <button id="confirmNameBtn">بزن بریم</button>
+  </div>
+</div>
+
+<!-- ۲. صفحه پیش‌بارگذاری و چرخش گوشی -->
+<div id="preload-screen" class="full-screen hidden">
+  <div class="content-box">
+    <div class="loading-spinner"></div>
+
+    <h2 id="preload-msg">...در حال آماده‌سازی </h2>
+    <div class="rotate-instruction">
+     <img src="images/rotate-phone.png"
+     alt="rotate phone"
+     class="rotate-icon">
+
+      <p>برای اینکه دنیای بازی بزرگ‌تر بشه <br> <b>گوشیت رو بچرخون </b></p>
+    </div>
+  </div>
+</div>
+
+<!-- صفحه استارت (بعد از پیش‌بارگذاری ظاهر می‌شود) -->
+<div id="start-screen" class="hidden">
+  <video id="startBg" playsinline webkit-playsinline muted loop></video>
+  <div id="fadeOverlay"></div>
+  <button id="start-btn">شروع</button>
+</div>
+
+
+<!-- ================= Player (main) ================= -->
+<div id="player">
+  <div id="video-container">
+    <video id="videoPlayer1" playsinline webkit-playsinline></video>
+    <video id="videoPlayer2" playsinline webkit-playsinline style="opacity:0;"></video>
+    <video id="loopVideo" playsinline webkit-playsinline style="opacity:0;"></video>
+
+    <div id="choices" class="hidden"></div>
+    <div id="question" class="hidden"></div>
+   <div id="timerDiv">
+  <div id="timerBar"></div>
+</div>
+
+
+    <!-- محل نمایش وضعیت و امتیاز نهایی -->
+    <div id="status" style="position:absolute; top:20px; left:20px; color:#fff; z-index:15;"></div>
+    <div id="scoreDiv" style="position:absolute; top:20px; right:20px; color:#fff; z-index:15;"></div>
+  </div>
+</div>
+
+<button id="inventoryBtn">جیب</button>
+
+<!-- inventory modal -->
+<div id="inventoryModal">
+  <div style="display:flex; justify-content:center; align-items:center;">
+    <div class="pocket-container">
+      <img id="pocketImg" src="images/pocket.png" alt="pocket">
+      <img id="itemInPocket" src="" alt="item">
+    </div>
+  </div>
+</div>
+
+<div id="overlayText"></div>
+
+<script src="main.js" defer></script>
+</body>
+</html>

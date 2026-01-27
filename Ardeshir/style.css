@@ -1,0 +1,437 @@
+/* عمومی */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Sahel','Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* فونت فارسی (در صورت وجود فایل محلی) */
+@font-face {
+  font-family: 'RooyinFreeFaNum-Regular';
+  src: url('fonts/RooyinFreeFaNum-Regular.ttf') format('truetype');
+font-family: 'Sahel'; /* <<< یک نام دلخواه برای فونت خود انتخاب کنید */
+  src: url('fonts/Sahel.ttf') format('truetype'); /* <<< آدرس و فرمت فایل فونت */
+}
+
+/* ========== Start screen ========== */
+#start-screen {
+  width: 100%;
+  height: 100%;
+  display: flex; /* نمایش از ابتدا */
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  position: fixed;
+  inset: 0; 
+ z-index: 20;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 800ms ease;
+}
+
+#startBg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #000;
+
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+#fadeOverlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms ease;
+  z-index: 30;
+}
+
+#start-btn {
+  border: none;
+  outline: none;
+  font-size: 32px;
+  font-weight: bold;
+  width: 180px;
+  max-width: 90%;
+  padding: 14px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: 'Sahel', monospace;
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 800ms cubic-bezier(.2,.9,.3,1), transform 300ms ease;
+  background: linear-gradient(180deg, rgba( 55, 15, 225, 0.6) 0%, #483ad6 100%);
+  color: #f2f0e9;
+border-radius: 50px; /* کاملا گرد */
+ border: 2px solid rgba(255, 255, 255, 0.3); 
+  filter: contrast(115%);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.7), inset 0 0 4px rgba(255,255,255,0.1);
+}
+
+#start-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+#start-btn.selected {
+  transform: translate(-50%) translateY(1px);
+  filter: brightness(3.5);
+  box-shadow: 0 0 8px rgba(255,255,255,0.15), inset 0 0 6px rgba(255,255,255,0.1);
+}
+
+/* ========== Player main ========== */
+#player { position: relative; width:100%; height:100%; display:none; justify-content:center; align-items:center; z-index:10; }
+
+#video-container { position: relative; width:100%; height:100%; display:flex; justify-content:center; align-items:center; overflow:hidden; }
+
+#video-container video {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:100%; height:100%; 
+  /* تغییر یافته برای جلوگیری از بریدگی و ایجاد کارد مشکی */
+  object-fit: contain;
+  background-color: #000;
+  transition: opacity 0.3s ease; z-index:5;
+}
+
+#loopVideo { z-index:4; opacity:0; }
+
+@media (min-width:1024px){
+  #video-container video, #startBg { width:auto; height:100%; object-fit:contain; }
+}
+
+/* choices */
+#choices {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 12;
+  pointer-events: auto;
+  width: 75%;
+  max-width: 450px;
+  justify-content: center;
+}
+
+.choice-btn {
+    /* --- تنظیمات اصلی شما (حفظ شده) --- */
+    color: rgba(255, 255, 255, 1);
+    font-family: 'Sahel', monospace;
+    font-size: 26px;
+    font-weight: bold;
+    padding: 14px 32px;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    border-radius: 50px; /* کاملا گرد */
+
+    /* --- تغییرات کلیدی برای نیمه شفاف شدن --- */
+    
+    /* ۱. پس زمینه نیمه شفاف */
+    background: rgba(72, 52, 212, 0.2);  /* رنگ بنفش با ۲۰٪ شفافیت */
+
+    /* ۲. حاشیه (Border) برای جلوه بیشتر */
+    border: 2px solid rgba(255, 255, 255, 0.3); /* حاشیه سفید با ۳۰٪ شفافیت */
+
+    /* ۳. (اختیاری) افکت بلور شیشه ای برای مرورگرهای مدرن */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* برای سازگاری با سافاری */
+}
+
+/* ========== استایل های بازخورد پاسخ (جدید) ========== */
+
+/* استایل برای دکمه ای که انتخاب شده و صحیح است */
+.choice-btn.correct {
+    background: rgba(46, 204, 113, 0.5); /* سبز نیمه شفاف */
+    border-color: rgba(46, 204, 113, 1.0);
+    transform: scale(1.05); /* کمی بزرگتر می شود */
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.7); /* درخشش سبز */
+}
+
+/* استایل برای دکمه ای که انتخاب شده و غلط است */
+.choice-btn.incorrect {
+    background: rgba(231, 76, 60, 0.5); /* قرمز نیمه شفاف */
+    border-color: rgba(231, 76, 60, 1.0);
+    animation: shake 0.5s ease-in-out; /* انیمیشن لرزیدن */
+}
+
+/* استایل برای دکمه های دیگر (که انتخاب نشده اند) */
+.choice-btn.disabled {
+    opacity: 0.5;
+    pointer-events: none; /* غیرقابل کلیک می شوند */
+    filter: grayscale(80%);
+}
+
+/* انیمیشن لرزیدن برای پاسخ غلط */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+
+.hidden { display: none !important; }
+
+/* ========== استایل برای گزینه های تصویری (جدید) ========== */
+
+.choice-btn.image-choice {
+    width: 160px;       /* <<< عرض بزرگتر */
+    height: 160px;      /* <<< ارتفاع بزرگتر */
+    padding: 10px;      /* پدینگ داخلی کمتر */
+    border-radius: 20px; /* گردی گوشه ها */
+    overflow: hidden;   /* اگر تصویر بزرگتر بود، بیرون نزند */
+}
+
+.choice-btn.image-choice img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* تصویر به صورت کامل و بدون تغییر شکل نمایش داده می شود */
+    pointer-events: none; /* برای اینکه خود تصویر، کلیک را ندزدد */
+}
+
+/* بزرگتر کردن کانتینر اصلی دکمه ها در صورت نیاز */
+#choices {
+    max-width: 600px; /* اجازه می دهیم کمی عریض تر شود */
+}
+
+/* overlay text */
+#overlayText {
+  position: absolute;
+  top: 1vh;        /* مهم */
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  max-width: 80%;
+  text-align: center;
+  z-index: 12;
+ /* --- تغییر کلیدی: اضافه کردن حاشیه به متن --- */
+  -webkit-text-stroke: 1px black; /* برای مرورگرهای WebKit (Chrome, Safari) */
+  paint-order: stroke fill; /* 
+  /* --- تغییر کلیدی: اضافه کردن سایه قوی --- */
+  text-shadow: 
+    0px 2px 4px rgba(0, 0, 0, 0.6),  /* سایه اصلی برای عمق */
+    0px 0px 8px rgba(72,52,212, 0.5); /* یک هاله تیره برای خوانایی */
+}
+
+#overlayText.show { opacity: 1; }
+
+/* inventory button */
+#inventoryBtn {
+  position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%); padding: 15px 25px;
+  background-color: #212E59; color: #ffcc66; font-size:20px; font-weight:bold; cursor:pointer; display:none; z-index:15;
+}
+
+.full-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  color: white;
+  text-align: center;
+
+}
+
+.content-box {
+  background: rgba( 55, 15, 225, 0.6);
+  padding: 2rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 8px solid rgba(255,255,255,0.2);
+  width: 80%;
+height: 60%;
+  max-width: 400px;
+max-height: 250px;
+
+ display: flex;
+    flex-direction: column; /* عناصر را زیر هم می چیند */
+    justify-content: center; /* در راستای عمودی، وسط چین می کند */
+    align-items: center; /* در راستای افقی، وسط چین می کند */
+    gap: 5px; /* <<< فاصله بین هر عنصر (عنوان، فیلد، دکمه) */
+}
+
+.content-box h1 {
+    font-size: 1.2rem; /* <<< اندازه عنوان "نام خود را وارد کنید" */
+    color: white;
+    margin-bottom: 5px; /* <<< فاصله عنوان از فیلد ورودی */
+margin-top: 0px;
+
+}
+
+.content-box h2 {
+    font-size: 1.1rem; /* <<< اندازه عنوان "نام خود را وارد کنید" */
+    color: white;
+    margin-bottom: 5px; /* <<< فاصله عنوان از فیلد ورودی */
+margin-top: 0px;
+
+}
+
+.content-box p {
+    font-size: 1.1rem; /* <<< اندازه عنوان "نام خود را وارد کنید" */
+    color: white;
+    margin-bottom: 5px; /* <<< فاصله عنوان از فیلد ورودی */
+margin-top: 0px;
+
+}
+
+#studentNameInput {
+  
+width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  margin: 20px 0;
+  font-family: 'RooyinFreeFaNum-Regular', sans-serif;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+#confirmNameBtn {
+  background: #ffcc66;
+  color: #1e3c72;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.8rem;
+  transition: transform 0.2s;
+margin-bottom: 0px;
+}
+
+#confirmNameBtn:hover { transform: scale(1.05); }
+
+.rotate-icon {
+  width: 60px;
+  margin-top: 20px;
+  animation: rotatePhone 3s infinite ease-in-out;
+}
+
+@keyframes rotatePhone {
+  0% { transform: rotate(-45deg); }
+  50% { transform: rotate(45deg); }
+  100% { transform: rotate(-45deg); }
+}
+
+.loading-spinner {
+  width: 15px;
+  height: 15px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ffcc66;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+#timerDiv {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 500px;
+  height: 8px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#timerDiv.show {
+  opacity: 1;
+}
+
+#timerBar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #ffcc66,
+    #ff6b6b
+  );
+  transform-origin: left;
+  transform: scaleX(1);
+  transition: transform 1s linear;
+}
+
+#end-screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: Sahel, sans-serif;
+  z-index: 9999;
+}
+
+#end-screen.hidden {
+  display: none;
+}
+
+#end-screen h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+#end-screen #finalScore {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+#end-screen button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #ff4500;
+  color: #fff;
+}
+
+/* inventory modal (skeleton) */
+#inventoryModal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index:20; }
+
+.pocket-container{ position: relative; width: clamp(280px,40vw,300px); margin:0 auto; display:block; aspect-ratio:1/1; }
+
+#pocketImg{ position:absolute; top:40%; left:0; width:100%; height:100%; object-fit:contain; z-index:3; pointer-events:none; }
+
+#itemInPocket{ position:absolute; left:50%; bottom:10%; transform:translateX(-50%); width:120%; height:auto; z-index:1; cursor:pointer; animation: floatRotateItem 2s ease-in-out infinite; -webkit-clip-path: inset(0 0 30% 0); clip-path: inset(0 0 30% 0); max-width:none; }
+
+@keyframes floatRotateItem { 0%{ transform: translateX(-50%) translateY(0) rotate(0deg);}25%{ transform: translateX(-50%) translateY(-2px) rotate(-3deg);}50%{ transform: translateX(-50%) translateY(-4px) rotate(2deg);}75%{ transform: translateX(-50%) translateY(-2px) rotate(-1deg);}100%{ transform: translateX(-50%) translateY(0) rotate(0deg);} }
+
+body { overflow-x:hidden; }
+
+.restart-btn { background-color: rgba(10,10,10,1); color:#cccccc; font-weight:600; display:flex; align-items:center; gap:8px; padding:10px 20px; cursor:pointer; transition:all .3s ease; }
