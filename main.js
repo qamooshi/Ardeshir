@@ -179,33 +179,22 @@ function swapToInactiveAndPlay(desiredSrc){
 /* ================= ۴. اتمام ویدیو و نمایش سوالات ================= */
 
 function onVideoEndLinear(){
-    if (currentIndex >= linearOrder.length) {
+    // پایان بازی
+    if (currentIndex === linearOrder.length - 1) {
         handleGameEnd();
-        return;
+        return; 
     }
 
+    // نمایش سوال
     const vid = videos[currentKey];
-
-    // ریست وضعیت پاسخ‌دهی
-    answeredThisStep = false;
-
-    // نمایش سوال اگر وجود داره
     if(vid.question){
         overlayText.innerText = vid.question;
         overlayText.classList.add('show');
     }
 
     if(vid.loop) startLoop(vid.loop);
-
-    if(vid.choices && vid.choices.length > 0){
-        showChoicesLinear(currentKey);
-        startChoiceCountdown(20); // تایمر از ابتدا
-    } else {
-        // عبور خودکار اگر سوالی نیست یا بدون گزینه
-        setTimeout(() => {
-            endCurrentAndProceed();
-        }, 500); // کوتاه ولی کافی
-    }
+    showChoicesLinear(currentKey);
+    startChoiceCountdown(20);
 }
 
 function handleGameEnd() {
@@ -228,15 +217,11 @@ finalScoreDiv.innerText = `تعداد پاسخ صحیح شما: ${score} از ${
 /* ================= ۵. توابع کمکی (تایمر، انتخاب‌ها و غیره) ================= */
 
 function startChoiceCountdown(seconds){
-    stopChoiceCountdown(); // تایمر قبلی قطع میشه
-    answeredThisStep = false; // حتما ریست شود
-
     const bar = document.getElementById('timerBar');
     let timeLeft = seconds;
 
-    // ریست CSS تایمر
-    bar.style.transform = 'scaleX(1)';
     timerDiv.classList.add('show');
+    bar.style.transform = 'scaleX(1)';
 
     countdownInterval = setInterval(() => {
         timeLeft--;
@@ -245,12 +230,7 @@ function startChoiceCountdown(seconds){
 
         if (timeLeft <= 0) {
             stopChoiceCountdown();
-
-            if(!answeredThisStep) {
-                answeredThisStep = true; // علامت پایان مرحله
-            }
-
-            endCurrentAndProceed(); // همیشه مرحله بعدی اجرا میشه
+            endCurrentAndProceed();
         }
     }, 1000);
 }
