@@ -5,23 +5,23 @@ const SCORE_ENTRY_ID = "entry.136173253";
 let studentName = "";
 
 /* ========== داده‌های ویدیوها ========= */
-const START_VIDEO = "videos/start-loop.mp4";
+const START_VIDEO = "videos/Start-Loop.mp4";
 
 
 const videos = {
-    1: { src:"videos/1.mp4", loop:"videos/1-loop.mp4", question: "تا تاریکی هوا چند ساعت وقت داره؟",
+    1: { src:"videos/1.mp4", loop:"videos/1-Loop.mp4", question: "تا تاریکی هوا چند ساعت وقت داره؟",
      choices:[{text:"۴"},{text:"۵"},{text:"۶"}], correctIndex: 1 },
-    2: { src:"videos/2.mp4", loop:"videos/2-loop.mp4", question: "از کدوم گیاه می‌تونه برای درمان زخمش استفاده کنه؟",
+    2: { src:"videos/2.mp4", loop:"videos/2-Loop.mp4", question: "از کدوم گیاه می‌تونه برای درمان زخمش استفاده کنه؟",
      choices:[{ text: "گیاه اول", image: "images/plant_a.png" },
             { text: "گیاه دوم", image: "images/plant_b.png" },
             { text: "گیاه سوم ", image: "images/plant_c.png" }], correctIndex: 2 },
-    3: { src:"videos/3.mp4", loop:"videos/3-loop.mp4", question: "باید از کدوم دسته کمک بگیره؟",
+    3: { src:"videos/3.mp4", loop:"videos/3-Loop.mp4", question: "باید از کدوم دسته کمک بگیره؟",
      choices:[{text:"پنج تا دو متری"},{text:"سه تا چهار متری"}], correctIndex: 1 },
-    4: { src:"videos/4.mp4", loop:"videos/4-loop.mp4", question: "چه کسری دیگه ای باید آب اضافه کنه تا گیاه راه درست رو نشون بده؟",
+    4: { src:"videos/4.mp4", loop:"videos/4-Loop.mp4", question: "چه کسری دیگه ای باید آب اضافه کنه تا گیاه راه درست رو نشون بده؟",
      choices:[{text:"دو ششم"},{text:"یک چهارم"},{text:"دو هشتم"}], correctIndex: 0 },
-    5: { src:"videos/5.mp4",loop:"videos/5-loop.mp4",question: "چند تا ضربه دیگه باید بزنه تا بیست میوه داشته باشه؟",
+    5: { src:"videos/5.mp4",loop:"videos/5-Loop.mp4",question: "چند تا ضربه دیگه باید بزنه تا بیست میوه داشته باشه؟",
      choices:[{text:"۴"},{text:"۵"},{text:"۶"}], correctIndex: 0 },
-    6: { src:"videos/6.mp4", loop: "videos/6-loop.mp4",
+    6: { src:"videos/6.mp4", loop: "videos/6-Loop.mp4",
     question: "جواب چی میشه؟",
      choices:[{text:"۲۴"},{text:"۳۲"},{text:"۳۴"}], correctIndex: 2 }, 
    7: {
@@ -30,7 +30,7 @@ const videos = {
     question: null,
     choices: null },
 };
-
+  
 
 const linearOrder = ['1','2','3','4','5','6','7'];
 
