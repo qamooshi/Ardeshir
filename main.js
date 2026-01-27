@@ -179,12 +179,15 @@ function swapToInactiveAndPlay(desiredSrc){
 /* ================= ۴. اتمام ویدیو و نمایش سوالات ================= */
 
 function onVideoEndLinear(){
-    if (currentIndex === linearOrder.length - 1) {
+    if (currentIndex >= linearOrder.length) {
         handleGameEnd();
-        return; 
+        return;
     }
 
     const vid = videos[currentKey];
+
+    // ریست وضعیت پاسخ‌دهی
+    answeredThisStep = false;
 
     // نمایش سوال اگر وجود داره
     if(vid.question){
@@ -196,12 +199,12 @@ function onVideoEndLinear(){
 
     if(vid.choices && vid.choices.length > 0){
         showChoicesLinear(currentKey);
-        startChoiceCountdown(20);
+        startChoiceCountdown(20); // تایمر از ابتدا
     } else {
-        // عبور خودکار اگر سوالی نیست
+        // عبور خودکار اگر سوالی نیست یا بدون گزینه
         setTimeout(() => {
             endCurrentAndProceed();
-        }, 1000);
+        }, 500); // کوتاه ولی کافی
     }
 }
 
@@ -226,6 +229,8 @@ finalScoreDiv.innerText = `تعداد پاسخ صحیح شما: ${score} از ${
 
 function startChoiceCountdown(seconds){
     stopChoiceCountdown(); // تایمر قبلی قطع میشه
+    answeredThisStep = false; // حتما ریست شود
+
     const bar = document.getElementById('timerBar');
     let timeLeft = seconds;
 
@@ -243,7 +248,6 @@ function startChoiceCountdown(seconds){
 
             if(!answeredThisStep) {
                 answeredThisStep = true; // علامت پایان مرحله
-                // امتیاز صفر ثبت میشه یا فقط رد میشه
             }
 
             endCurrentAndProceed(); // همیشه مرحله بعدی اجرا میشه
