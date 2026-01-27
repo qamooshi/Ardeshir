@@ -179,22 +179,30 @@ function swapToInactiveAndPlay(desiredSrc){
 /* ================= ۴. اتمام ویدیو و نمایش سوالات ================= */
 
 function onVideoEndLinear(){
-    // پایان بازی
     if (currentIndex === linearOrder.length - 1) {
         handleGameEnd();
         return; 
     }
 
-    // نمایش سوال
     const vid = videos[currentKey];
+
+    // نمایش سوال اگر وجود داره
     if(vid.question){
         overlayText.innerText = vid.question;
         overlayText.classList.add('show');
     }
 
     if(vid.loop) startLoop(vid.loop);
-    showChoicesLinear(currentKey);
-    startChoiceCountdown(20);
+
+    if(vid.choices && vid.choices.length > 0){
+        showChoicesLinear(currentKey);
+        startChoiceCountdown(20);
+    } else {
+        // عبور خودکار اگر سوالی نیست
+        setTimeout(() => {
+            endCurrentAndProceed();
+        }, 1000);
+    }
 }
 
 function handleGameEnd() {
@@ -217,11 +225,13 @@ finalScoreDiv.innerText = `تعداد پاسخ صحیح شما: ${score} از ${
 /* ================= ۵. توابع کمکی (تایمر، انتخاب‌ها و غیره) ================= */
 
 function startChoiceCountdown(seconds){
+    stopChoiceCountdown(); // تایمر قبلی قطع میشه
     const bar = document.getElementById('timerBar');
     let timeLeft = seconds;
 
-    timerDiv.classList.add('show');
+    // ریست CSS تایمر
     bar.style.transform = 'scaleX(1)';
+    timerDiv.classList.add('show');
 
     countdownInterval = setInterval(() => {
         timeLeft--;
@@ -230,7 +240,13 @@ function startChoiceCountdown(seconds){
 
         if (timeLeft <= 0) {
             stopChoiceCountdown();
-            endCurrentAndProceed();
+
+            if(!answeredThisStep) {
+                answeredThisStep = true; // علامت پایان مرحله
+                // امتیاز صفر ثبت میشه یا فقط رد میشه
+            }
+
+            endCurrentAndProceed(); // همیشه مرحله بعدی اجرا میشه
         }
     }, 1000);
 }
