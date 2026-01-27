@@ -31,6 +31,7 @@ const videos = {
     choices: null },
 };
 
+
 const linearOrder = ['1','2','3','4','5','6','7'];
 
 /* --- المان‌های DOM --- */
