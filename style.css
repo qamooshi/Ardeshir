@@ -159,11 +159,21 @@ border-radius: 50px; /* کاملا گرد */
 /* ========== استایل های بازخورد پاسخ (جدید) ========== */
 
 /* استایل برای دکمه ای که انتخاب شده و صحیح است */
+/* ========== استایل برای دکمه صحیح (افکت ضربه) ========== */
+
+@keyframes impactScale {
+    0% { transform: scale(1.05); } /* شروع با بزرگتر بودن (مثل قبل) */
+    50% { transform: scale(1.15); } /* کمی بزرگتر می شود */
+    100% { transform: scale(1.05); } /* برمی گردد به اندازه اولیه */
+}
+
 .choice-btn.correct {
     background: rgba(46, 204, 113, 0.5); /* سبز نیمه شفاف */
     border-color: rgba(46, 204, 113, 1.0);
-    transform: scale(1.05); /* کمی بزرگتر می شود */
     box-shadow: 0 0 20px rgba(46, 204, 113, 0.7); /* درخشش سبز */
+    
+    animation: impactScale 0.3s ease-out; /* انیمیشن ضربه: 0.3 ثانیه */
+    transform: scale(1.05); /* مطمئن می شویم که در پایان انیمیشن، بزرگتر باقی بماند */
 }
 
 /* استایل برای دکمه ای که انتخاب شده و غلط است */
@@ -285,25 +295,25 @@ margin-top: 0px;
 }
 
 .content-box h2 {
-    font-size: 1.1rem; /* <<< اندازه عنوان "نام خود را وارد کنید" */
-    color: white;
+    font-size: 1rem; /* <<< اندازه عنوان "نام خود را وارد کنید" */
+    color: #ffcc66;
     margin-bottom: 5px; /* <<< فاصله عنوان از فیلد ورودی */
 margin-top: 0px;
 
 }
 
 .content-box p {
-    font-size: 1.1rem; /* <<< اندازه عنوان "نام خود را وارد کنید" */
+    font-size: 1.8rem; /* <<< اندازه عنوان "نام خود را وارد کنید" */
     color: white;
     margin-bottom: 5px; /* <<< فاصله عنوان از فیلد ورودی */
-margin-top: 0px;
+margin-top: 5px;
 
 }
 
 #studentNameInput {
   
 width: 100%;
-  padding: 12px;
+  padding: 14px;
   border-radius: 10px;
   border: none;
   margin: 20px 0;
@@ -328,9 +338,11 @@ margin-bottom: 0px;
 #confirmNameBtn:hover { transform: scale(1.05); }
 
 .rotate-icon {
-  width: 60px;
-  margin-top: 20px;
+  width: 80px;
+ display: block;           /* این خط خیلی مهمه */
+  margin: 10px auto 0 auto; /* وسط افقی بدون flex */
   animation: rotatePhone 3s infinite ease-in-out;
+transition: opacity 0.3s ease;
 }
 
 @keyframes rotatePhone {
@@ -339,17 +351,38 @@ margin-bottom: 0px;
   100% { transform: rotate(-45deg); }
 }
 
+/* container برای loader */
 .loading-spinner {
-  width: 15px;
-  height: 15px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #ffcc66;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 10px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+  height: 20px; /* ارتفاع کل اسپینر */
+  margin-top: 10px;
+margin-bottom: 10px;
 }
 
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* خطوط موجی */
+.loading-spinner div {
+  width: 5px;
+  height: 100%;
+  background: #ffcc66;
+  animation: wave 1s infinite ease-in-out;
+  border-radius: 2px;
+}
+
+/* تاخیر برای هر خط */
+.loading-spinner div:nth-child(1) { animation-delay: 0s; }
+.loading-spinner div:nth-child(2) { animation-delay: 0.1s; }
+.loading-spinner div:nth-child(3) { animation-delay: 0.2s; }
+.loading-spinner div:nth-child(4) { animation-delay: 0.3s; }
+.loading-spinner div:nth-child(5) { animation-delay: 0.4s; }
+
+/* keyframes موج */
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
 
 #timerDiv {
   position: absolute;
@@ -358,13 +391,13 @@ margin-bottom: 0px;
   transform: translateX(-50%);
   width: 80%;
   max-width: 500px;
-  height: 8px;
+  height: 12px;
   background: rgba(255,255,255,0.15);
   border-radius: 10px;
   overflow: hidden;
   z-index: 30;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.05s ease;
 }
 
 #timerDiv.show {
@@ -376,8 +409,8 @@ margin-bottom: 0px;
   height: 100%;
   background: linear-gradient(
     90deg,
-    #ffcc66,
-    #ff6b6b
+    #FF1212,
+    #1255FF
   );
   transform-origin: left;
   transform: scaleX(1);
@@ -387,7 +420,7 @@ margin-bottom: 0px;
 #end-screen {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.95);
+  background:  rgba( 55, 15, 225, 0.6);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -409,6 +442,7 @@ margin-bottom: 0px;
 #end-screen #finalScore {
   font-size: 2rem;
   margin-bottom: 2rem;
+color: #ffcc66;
 }
 
 #end-screen button {
@@ -417,8 +451,8 @@ margin-bottom: 0px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  background: #ff4500;
-  color: #fff;
+  background: #ffcc66;
+  color: #1e3c72;
 }
 
 /* inventory modal (skeleton) */

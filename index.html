@@ -3,7 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>فیلم تعاملی POV — بدون loader</title>
+
+<meta property="og:title" content="ماجرای اردشیر" />
+<meta property="og:description" content="یک تجربه تعاملی آموزشی برای کودکان سوم ابتدایی" />
+<meta property="og:image" content="https://ardeshir.netlify.app/images/preview.jpg" />
+<meta property="og:url" content="https://ardeshir.netlify.app" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image">
+
+<title>ماجرای اردشیر</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -11,9 +19,9 @@
 <body>
 <!-- ================= End Screen ================= -->
 <div id="end-screen" class="hidden">
-  <h1>پایان داستان</h1>
+  <h1>!پایان</h1>
   <div id="finalScore">امتیاز شما: 0</div>
-  <button id="restart-btn">شروع دوباره</button>
+  <button id="restart-btn">دوباره بازی کن</button>
 </div>
 
 
@@ -31,15 +39,23 @@
 <!-- ۲. صفحه پیش‌بارگذاری و چرخش گوشی -->
 <div id="preload-screen" class="full-screen hidden">
   <div class="content-box">
-    <div class="loading-spinner"></div>
+    <div class="loading-spinner">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
 
-    <h2 id="preload-msg">...در حال آماده‌سازی </h2>
+
+    <h2 id="preload-msg">!یه لحظه صبر کن </h2>
     <div class="rotate-instruction">
      <img src="images/rotate-phone.png"
      alt="rotate phone"
      class="rotate-icon">
 
-      <p>برای اینکه دنیای بازی بزرگ‌تر بشه <br> <b>گوشیت رو بچرخون </b></p>
+<p id="rotateText">گوشیت رو بچرخون</p>
+
     </div>
   </div>
 </div>

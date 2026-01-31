@@ -49,7 +49,8 @@ const regScreen = document.getElementById('registration-screen');
 const preloadScreen = document.getElementById('preload-screen');
 const nameInput = document.getElementById('studentNameInput');
 const confirmBtn = document.getElementById('confirmNameBtn');
-
+const rotateIcon = document.querySelector('.rotate-icon');
+const rotateText = document.getElementById('rotateText');
 /* --- وضعیت سیستم --- */
 let activeVideo = video1;
 let inactiveVideo = video2;
@@ -93,7 +94,7 @@ async function startPreloadingProcess() {
             videoBlobs[url] = URL.createObjectURL(blob); // ذخیره در حافظه
         }
         
-        document.getElementById('preload-msg').innerText = "همه چیز آماده‌ست!";
+        document.getElementById('preload-msg').innerText = "آماده ای؟";
         
         setTimeout(() => {
             preloadScreen.style.opacity = '0';
@@ -203,15 +204,13 @@ function handleGameEnd() {
     const finalScoreDiv = document.getElementById('finalScore');
     
     const totalQuestions = linearOrder.length - 1;
-finalScoreDiv.innerText = `تعداد پاسخ صحیح شما: ${score} از ${totalQuestions}`;
+finalScoreDiv.innerText =
+  `تعداد پاسخ‌های درست: ${score.toLocaleString('fa-IR')} از ${totalQuestions.toLocaleString('fa-IR')}`;
 
     endScreen.classList.remove('hidden');
     
     submitToGoogleForms();
     
-    setTimeout(() => {
-        finalScoreDiv.innerText = "گزارش برای معلم ارسال شد. ممنون قهرمان!";
-    }, 2000);
 }
 
 /* ================= ۵. توابع کمکی (تایمر، انتخاب‌ها و غیره) ================= */
@@ -240,10 +239,6 @@ function stopChoiceCountdown(){
     timerDiv.classList.remove('show');
 }
 
-
-/* در main.js، این تابع را با نسخه جدید جایگزین کنید */
-
-/* ======================== choices (نسخه نهایی و اصلاح شده) ======================== */
 
 /* ======================== choices (نسخه نهایی و ۱۰۰٪ کارآمد) ======================== */
 
@@ -295,14 +290,16 @@ function showChoicesLinear(key) {
             const isCorrect = (idx === correctIndex);
             
             // ۳. استایل ها برای بازخورد (منطق شما، بدون تغییر)
-            if (isCorrect) {
+             if (isCorrect) {
                 score++;
-                btn.classList.add('correct');
+                btn.classList.add('correct'); // <<< استایل سبز و انیمیشن impactScale اعمال می شود >>>
+                playSuccessSound(); // <<< پخش صدای تشویق >>>
             } else {
                 btn.classList.add('incorrect');
                 if (buttonElements[correctIndex]) {
                     buttonElements[correctIndex].classList.add('correct');
                 }
+ playFailSound(); // <<< پخش صدای پاسخ غلط >>>
             }
 
             // ۴. غیرفعال کردن دکمه های دیگر (منطق شما، بدون تغییر)
@@ -315,7 +312,7 @@ function showChoicesLinear(key) {
             // ۵. وقفه تعلیق آمیز (منطق شما، بدون تغییر)
             setTimeout(() => {
                 endCurrentAndProceed();
-            }, 2000);
+            }, 3000);
         });
     });
 
@@ -352,6 +349,37 @@ function stopLoop(){
     loopVideo.pause();
     loopVideo.style.opacity = 0;
 }
+
+/* ========== توابع کمکی برای افکت های تشویقی (صدا) ========== */
+
+// برای پخش صدای تشویق
+function playSuccessSound() {
+    const successAudio = new Audio('audio/success.mp3'); // <<< مسیر فایل صوتی شما
+    successAudio.play().catch(e => console.error("خطا در پخش صدا:", e));
+}
+
+function playFailSound() {
+    const failAudio = new Audio('audio/fail.mp3'); // <<< مسیر فایل صوتی شما
+    failAudio.play().catch(e => console.error("خطا در پخش صدا:", e));
+}
+
+function handleOrientation() {
+  // اگر عرض > ارتفاع یعنی حالت landscape
+  if (window.innerWidth > window.innerHeight) {
+    rotateIcon.style.display = 'none'; // مخفی کردن
+ rotateText.textContent = '...برو که رفتیم'; // متن جدید  
+} else {
+    rotateIcon.style.display = 'block'; // دوباره نشان دادن در portrait
+rotateText.textContent = 'گوشیت رو بچرخون'; // متن اصلی
+  }
+}
+
+// بررسی اولیه
+handleOrientation();
+
+// اضافه کردن event listener
+window.addEventListener('resize', handleOrientation);
+window.addEventListener('orientationchange', handleOrientation);
 
 // ارسال گزارش
 async function submitToGoogleForms() {
