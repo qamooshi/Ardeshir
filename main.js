@@ -7,14 +7,13 @@ let studentName = "";
 /* ========== داده‌های ویدیوها ========= */
 const START_VIDEO = "videos/Start-Loop.mp4";
 
-
 const videos = {
     1: { src:"videos/1.mp4", loop:"videos/1-Loop.mp4", question: "تا تاریکی هوا چند ساعت وقت داره؟",
      choices:[{text:"۴"},{text:"۵"},{text:"۶"}], correctIndex: 1 },
     2: { src:"videos/2.mp4", loop:"videos/2-Loop.mp4", question: "از کدوم گیاه می‌تونه برای درمان زخمش استفاده کنه؟",
-     choices:[{ text: "گیاه اول", image: "images/plant_a.png" },
-            { text: "گیاه دوم", image: "images/plant_b.png" },
-            { text: "گیاه سوم ", image: "images/plant_c.png" }], correctIndex: 2 },
+     choices:[{ text: "گیاه اول", image: "images/plant_a.webp" },
+            { text: "گیاه دوم", image: "images/plant_b.webp" },
+            { text: "گیاه سوم ", image: "images/plant_c.webp" }], correctIndex: 2 },
     3: { src:"videos/3.mp4", loop:"videos/3-Loop.mp4", question: "باید از کدوم دسته کمک بگیره؟",
      choices:[{text:"پنج تا دو متری"},{text:"سه تا چهار متری"}], correctIndex: 1 },
     4: { src:"videos/4.mp4", loop:"videos/4-Loop.mp4", question: "چه کسری دیگه ای باید آب اضافه کنه تا گیاه راه درست رو نشون بده؟",
@@ -30,7 +29,6 @@ const videos = {
     question: null,
     choices: null },
 };
-  
 
 const linearOrder = ['1','2','3','4','5','6','7'];
 
@@ -59,10 +57,10 @@ let currentKey = linearOrder[0];
 let countdownInterval = null;
 let score = 0;
 let answeredThisStep = false;
-const videoBlobs = {}; // محل ذخیره ویدیوهای لود شده
+const videoBlobs = {}; // این متغیر نگه داشته شد تا بقیه کد به هم نریزد
 
+// دیگر نیازی به دانلود کامل با Blob نیست، مستقیم از لینک استفاده می‌کنیم
 function getSrcOrBlob(url){ return videoBlobs[url] || url; }
-
 /* ================= ۱. سیستم ثبت‌نام و پری‌لود ================= */
 
 confirmBtn.addEventListener('click', () => {
@@ -77,44 +75,56 @@ confirmBtn.addEventListener('click', () => {
 });
 
 async function startPreloadingProcess() {
-    // پری‌لود کردن ویدیوی بک‌گراند استارت و دو ویدیوی اول بازی
-    const initialAssets = [
-    START_VIDEO,
-    videos['1'].src,
-    videos['1'].loop
-];
+    document.getElementById('preload-msg').innerText = "آماده ای؟";
 
-    
     try {
-        for (const url of initialAssets) {
-            if (!url) continue;
-            const response = await fetch(url);
-            const blob = await response.blob();
-            videoBlobs[url] = URL.createObjectURL(blob); // ذخیره در حافظه
-        }
+        // ۱. دانلود کاملِ فقط و فقط ویدیوی استارت (برای نمایش فوری و بدون قطعی)
+        const response = await fetch(START_VIDEO);
+        const blob = await response.blob();
+        videoBlobs[START_VIDEO] = URL.createObjectURL(blob);
         
-        document.getElementById('preload-msg').innerText = "آماده ای؟";
+        startBg.src = getSrcOrBlob(START_VIDEO);
         
-        setTimeout(() => {
+        // ۲. استریم ویدیوی اول بازی (بدون دانلود کامل)
+        inactiveVideo.src = videos[linearOrder[0]].src;
+        inactiveVideo.preload = "auto";
+
+        let loadedCount = 0;
+
+        const finishPreload = () => {
+            if (preloadScreen.classList.contains('hidden')) return; // جلوگیری از اجرای دوگانه
             preloadScreen.style.opacity = '0';
             setTimeout(() => {
                 preloadScreen.classList.add('hidden');
                 showStartScreen();
             }, 500);
-        }, 3000); // ۳ ثانیه زمان برای خواندن پیام "گوشی را بچرخان"
+        };
+
+        const checkReady = () => {
+            loadedCount++;
+            // منتظریم تا هم ویدیوی استارت (سریع) و هم نوک ویدیوی اول (استریم) آماده شوند
+            if (loadedCount >= 2) {
+                setTimeout(finishPreload, 2000); // زمان برای خواندن "گوشیت رو بچرخون"
+            }
+        };
+
+        // گوش دادن به رویدادهای مرورگر (canplaythrough برای ویدیوی کامل، loadeddata برای ویدیوی استریم)
+        startBg.addEventListener('canplaythrough', checkReady, { once: true });
+        inactiveVideo.addEventListener('loadeddata', checkReady, { once: true });
+
+        // فال‌بک طلایی: اگر اینترنت کاربر خیلی ضعیف بود، بعد از 8 ثانیه به زور وارد بازی بشه تا گیر نکنه
+        setTimeout(finishPreload, 8000); 
+
     } catch (e) {
         console.error("خطا در بارگذاری:", e);
         showStartScreen(); // در صورت خطا هم وارد بازی شود
     }
 }
-
 function showStartScreen() {
-   
- regScreen.style.display = 'none';
+    regScreen.style.display = 'none';
     preloadScreen.style.display = 'none';
 
-
- const startScreenEl = document.getElementById('start-screen');
+    const startScreenEl = document.getElementById('start-screen');
     startScreenEl.classList.remove('hidden');
     startScreenEl.style.display = 'flex';
 
@@ -145,6 +155,20 @@ startBtn.onclick = () => {
 
 /* ================= ۳. منطق اصلی پخش ویدیو و جابجایی ================= */
 
+// تابع جدید برای دانلود مخفیانه ویدیوی بعدی در حین بازی کاربر
+function preloadNextVideoInGame() {
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < linearOrder.length) {
+        const nextKey = linearOrder[nextIndex];
+        const nextSrc = videos[nextKey].src;
+        
+        // ویدیوی بعدی رو میذاریم توی پلیری که الان خاموشه تا دانلودش شروع بشه
+        inactiveVideo.src = nextSrc;
+        inactiveVideo.preload = "auto";
+        inactiveVideo.load();
+    }
+}
+
 function playCurrentVideo(){
     if(currentIndex >= linearOrder.length){
         showFinalResults();
@@ -160,20 +184,30 @@ function playCurrentVideo(){
 }
 
 function swapToInactiveAndPlay(desiredSrc){
-    inactiveVideo.src = getSrcOrBlob(desiredSrc);
+    // بررسی می‌کنیم که آیا سورس ویدیو از قبل تنظیم شده یا نه
+    if (!inactiveVideo.src.endsWith(desiredSrc)) {
+        inactiveVideo.src = getSrcOrBlob(desiredSrc);
+        inactiveVideo.load();
+    }
+    
     inactiveVideo.muted = false;
     inactiveVideo.style.opacity = 0;
     
     const doSwap = () => {
         inactiveVideo.oncanplaythrough = null;
+        inactiveVideo.onloadeddata = null;
         inactiveVideo.play().catch(()=>{});
         inactiveVideo.style.opacity = 1;
         activeVideo.style.opacity = 0;
         [activeVideo, inactiveVideo] = [inactiveVideo, activeVideo];
     };
 
-    if (inactiveVideo.readyState >= 3) { doSwap(); } 
-    else { inactiveVideo.oncanplaythrough = doSwap; }
+    if (inactiveVideo.readyState >= 3) { 
+        doSwap(); 
+    } else { 
+        inactiveVideo.oncanplaythrough = doSwap; 
+        inactiveVideo.onloadeddata = doSwap; // فال‌بک برای موبایل
+    }
 }
 
 /* ================= ۴. اتمام ویدیو و نمایش سوالات ================= */
@@ -184,6 +218,9 @@ function onVideoEndLinear(){
         handleGameEnd();
         return; 
     }
+
+    // پیش‌بارگذاری ویدیوی مرحله بعدی در پس‌زمینه
+    preloadNextVideoInGame();
 
     // نمایش سوال
     const vid = videos[currentKey];
@@ -203,7 +240,7 @@ function handleGameEnd() {
     const finalScoreDiv = document.getElementById('finalScore');
     
     const totalQuestions = linearOrder.length - 1;
-finalScoreDiv.innerText =
+    finalScoreDiv.innerText =
   `تعداد پاسخ‌های درست: ${score.toLocaleString('fa-IR')} از ${totalQuestions.toLocaleString('fa-IR')}`;
 
     endScreen.classList.remove('hidden');
@@ -298,7 +335,7 @@ function showChoicesLinear(key) {
                 if (buttonElements[correctIndex]) {
                     buttonElements[correctIndex].classList.add('correct');
                 }
- playFailSound(); // <<< پخش صدای پاسخ غلط >>>
+            playFailSound(); // <<< پخش صدای پاسخ غلط >>>
             }
 
             // ۴. غیرفعال کردن دکمه های دیگر (منطق شما، بدون تغییر)
