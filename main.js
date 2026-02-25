@@ -81,8 +81,7 @@ async function startPreloadingProcess() {
     const initialAssets = [
     START_VIDEO,
     videos['1'].src,
-    videos['1'].loop,
-    videos['2'].src
+    videos['1'].loop
 ];
 
     
