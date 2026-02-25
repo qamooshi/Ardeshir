@@ -181,8 +181,19 @@ function playCurrentVideo(){
 
     const desiredSrc = videos[currentKey]?.src;
     swapToInactiveAndPlay(desiredSrc);
-}
 
+    // --- تغییر جدید: پیش‌بارگذاری ویدیوی لوپ همین مرحله در پس‌زمینه ---
+    const loopSrc = videos[currentKey]?.loop;
+    if (loopSrc) {
+        // اگر سورس از قبل تنظیم نشده بود، تنظیمش می‌کنیم تا دانلودش شروع بشه
+        if (!loopVideo.src.includes(loopSrc)) {
+            loopVideo.src = getSrcOrBlob(loopSrc);
+            loopVideo.preload = "auto";
+            loopVideo.load();
+        }
+    }
+    // ------------------------------------------------------------------
+}
 function swapToInactiveAndPlay(desiredSrc){
     // بررسی می‌کنیم که آیا سورس ویدیو از قبل تنظیم شده یا نه
     if (!inactiveVideo.src.endsWith(desiredSrc)) {
@@ -375,8 +386,16 @@ function hideChoicesImmediate(){
 
 function startLoop(src){
     if(!src) return;
-    loopVideo.src = getSrcOrBlob(src);
+    
+    // چون در تابع بالا ویدیو را بارگذاری کردیم، اینجا فقط چک می‌کنیم که سورس درست باشد
+    if (!loopVideo.src.includes(src)) {
+        loopVideo.src = getSrcOrBlob(src);
+    }
+    
     loopVideo.loop = true;
+    
+    // --- تغییر جدید: می‌آوریمش روی ویدیوی اصلی تا پرش تصویر نداشته باشیم ---
+    loopVideo.style.zIndex = "6"; 
     loopVideo.style.opacity = 1;
     loopVideo.play().catch(()=>{});
 }
@@ -384,8 +403,9 @@ function startLoop(src){
 function stopLoop(){
     loopVideo.pause();
     loopVideo.style.opacity = 0;
+    // --- تغییر جدید: برمی‌گردانیمش به لایه زیرین ---
+    loopVideo.style.zIndex = "4"; 
 }
-
 /* ========== توابع کمکی برای افکت های تشویقی (صدا) ========== */
 
 // برای پخش صدای تشویق
